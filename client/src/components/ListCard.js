@@ -64,9 +64,9 @@ function ListCard(props) {
         <div
             id={idNamePair._id}
             key={idNamePair._id}
-            onClick={handleLoadList}
             className={'list-card ' + selectClass}>
             <span
+                onClick={handleLoadList}
                 id={"list-card-text-" + idNamePair._id}
                 key={"span-" + idNamePair._id}
                 className="list-card-text">
