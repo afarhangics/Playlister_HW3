@@ -31,15 +31,20 @@ function SongCard(props) {
         targetId = targetId.substring(target.id.indexOf("-") + 1);
         let sourceId = event.dataTransfer.getData("song");
         sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
-        if(sourceId === "" || targetId === ""){
+        console.log({targetId, sourceId })
+        if(sourceId.length === "" || targetId === ""){
             alert("please drag the whole song card");
             return;
         }
-        
         setIsDragging(false);
         setDraggedTo(false);
-        // ASK THE MODEL TO MOVE THE DATA
         props.moveCallback(parseInt(sourceId), parseInt(targetId));
+    }
+
+    const handleDoubleClick = (event) => {
+        if (event.detail === 2) {
+            props.editCurrentSongCallback(props.index);
+        }
     }
 
     const getItemNum = () => {
@@ -63,6 +68,7 @@ function SongCard(props) {
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onClick={handleDoubleClick}
             draggable="true"
             className={cardClass}
         >
@@ -73,6 +79,7 @@ function SongCard(props) {
                 href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
                 {song.title} by {song.artist}
             </a>
+            
             <input
                 type="button"
                 id={"remove-song-" + index}

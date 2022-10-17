@@ -190,7 +190,7 @@ input {
 
 .modal {
   position: fixed;
-  top: 0;
+  top: -100px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -232,7 +232,7 @@ input {
 }
 
 .modal-north {
-  font-size:28pt;
+  font-size:20pt;
   font-weight: bold;
   background-image: linear-gradient(to bottom,         
   #b8b808, #636723);
@@ -270,12 +270,12 @@ span {
 }
 
 .modal-prompt {  
-  font-size:28pt;
+  font-size:20pt;
   font-weight: bold;
 }
 
 .modal-textfield {
-  font-size:28pt;
+  font-size:18pt;
 }
 
 .modal-button {
