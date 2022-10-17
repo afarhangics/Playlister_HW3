@@ -53,7 +53,11 @@ const ListSelector = () => {
                 markListForDeletion={(list) => store.markListForDeletion(list)}
             />
         ))
+
     }
+
+    let addListClass = "playlister-button";
+    if (store.shouldDisableAddList()) addListClass += " disabled";
 
     return (
         <div className="root" id="playlist-selector">
@@ -62,7 +66,8 @@ const ListSelector = () => {
                         type="button"
                         id="add-list-button"
                         onClick={handleCreateNewList}
-                        className="playlister-button"
+                        disabled={store.shouldDisableAddList()}
+                        className={addListClass}
                         value="+" />
                     Your Lists
             </div>

@@ -44,6 +44,8 @@ export const useGlobalStore = () => {
         markDeleteList:null,
         newListCounter: 0,
         listNameActive: false,
+        isEdittingList: false,
+        currentListIsSet: false,
         currentSong:null,
         currentSongIndex: null,
     });
@@ -62,6 +64,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     markDeleteList:null,
                     listNameActive: false,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
                 });
@@ -75,6 +78,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     markDeleteList:null,
                     listNameActive: false,
+                    currentListIsSet: false,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
                 })
@@ -87,22 +91,25 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     edittingListId: payload._id,
                     newListCounter: store.newListCounter + 1,
+                    isEdittingList: true,
                     markDeleteList:null,
                     listNameActive: true,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
                 });
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
-                console.log("loadingpairs", store.edittingListId);
                 return setStore({
                     idNamePairs: payload.idNamePairs,
                     currentList: null,
                     edittingListId: payload.edittingListId,
+                    isEdittingList: payload.edittingListId !== "_id",
                     newListCounter: store.newListCounter,
                     markDeleteList:null,
                     listNameActive: false,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
                 });
@@ -116,6 +123,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     markDeleteList:null,
                     listNameActive: false,
+                    isEdittingList: false,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
                 });
@@ -126,6 +135,8 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
                     edittingListId: store.edittingListId,
+                    isEdittingList: false,
+                    currentListIsSet: true,
                     newListCounter: store.newListCounter,
                     markDeleteList:null,
                     listNameActive: false,
@@ -139,9 +150,11 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
                     edittingListId: payload._id,
+                    isEdittingList: true,
                     newListCounter: store.newListCounter,
-                    markDeleteList:null,
+                    markDeleteList: null,
                     listNameActive: true,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
                 });
@@ -154,7 +167,9 @@ export const useGlobalStore = () => {
                     edittingListId: store.edittingListId,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    isEdittingList: false,
                     markDeleteList:payload,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
 
@@ -169,7 +184,9 @@ export const useGlobalStore = () => {
                     edittingListId: "_id",
                     newListCounter: store.newListCounter - 1,
                     listNameActive: false,
+                    isEdittingList: false,
                     markDeleteList:null,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
 
@@ -182,7 +199,9 @@ export const useGlobalStore = () => {
                     edittingListId: "_id",
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    isEdittingList: false,
                     markDeleteList:null,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: store.currentSong,
                     currentSongIndex: store.currentSongIndex,
 
@@ -195,7 +214,9 @@ export const useGlobalStore = () => {
                     edittingListId: "_id",
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    isEdittingList: false,
                     markDeleteList:null,
+                    currentListIsSet: store.currentListIsSet,
                     currentSong: payload.song,
                     currentSongIndex: payload.index,
 
@@ -441,7 +462,21 @@ export const useGlobalStore = () => {
     store.redo = function () {
         tps.doTransaction();
     }
-
+    store.canUndo = function () {
+        return tps.hasTransactionToUndo();
+    }
+    store.canRedo = function () {
+        return tps.hasTransactionToRedo();
+    }
+    store.canAddSong = function () {
+        return store.currentListIsSet;
+    }
+    store.canClose = function () {
+        return store.currentListIsSet;
+    }
+    store.shouldDisableAddList = function () {
+        return store.isEdittingList;
+    }
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function (playist) {
         storeReducer({

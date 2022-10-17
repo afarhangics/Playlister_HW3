@@ -1,5 +1,4 @@
 import EditToolbar from "./EditToolbar";
-import { useHistory } from 'react-router-dom'
 /*
     Our Application's Banner, note we are using function-style
     React. Our banner just has a left-aligned heading and a
@@ -7,17 +6,10 @@ import { useHistory } from 'react-router-dom'
     
     @author McKilla Gorilla
 */
-function Banner(props) {
-    const history = useHistory();
-
-    function goHome(){
-        history.push('/');
-    }
+function Banner() {
     return (        
         <div id="playlister-banner">
-            <span style={{cursor:'pointer'}} onClick={goHome}>
                 Playlister
-            </span>
             <EditToolbar />
         </div>
     );
