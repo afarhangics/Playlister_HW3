@@ -17,7 +17,7 @@ export default class DeleteSongModal extends Component {
                 </div>                            
                 <div className="modal-center">
                     <div className="modal-center-content">
-                        Are you sure you wish to permanently remove <span id="remove-song-span">{title}</span> from the playlist?
+                         you wish to permanently remove <span id="remove-song-span">{title}</span> from the playlist?
                     </div>
                 </div>
                 <div className="modal-south">
