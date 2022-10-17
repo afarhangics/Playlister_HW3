@@ -182,19 +182,6 @@ export const useGlobalStore = () => {
 
                 });
             }
-            case GlobalStoreActionType.UPDATE_CURRENT_LIST: {
-                return setStore({
-                    idNamePairs: store.idNamePairs,
-                    currentList: payload,
-                    edittingListId: "_id",
-                    newListCounter: store.newListCounter,
-                    listNameActive: false,
-                    markDeleteList:null,
-                    currentSong: store.currentSong,
-                    currentSongIndex: store.currentSongIndex,
-
-                });
-            }
             case GlobalStoreActionType.LOAD_CURRENT_SONG: {
                 return setStore({
                     idNamePairs: store.idNamePairs,
@@ -279,6 +266,14 @@ export const useGlobalStore = () => {
         const { currentList } = store;
         let songs = currentList.songs;
         songs.splice(index, 0, song);
+        let content = currentList;
+        content.songs = songs;
+        store.updatedListContent(content);
+    }
+    store.removeSong = async function(){
+        const { currentList, currentSongIndex } = store;
+        let songs = currentList.songs;
+        songs.splice(currentSongIndex, 1);
         let content = currentList;
         content.songs = songs;
         store.updatedListContent(content);

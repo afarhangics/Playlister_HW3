@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default class DeleteSongModal extends Component {
-
-    render() {
-        const { song, deleteSongCallback, hideDeleteSongModalCallback } = this.props;
-        let title = "";
+function DeleteSongModal({ song, deleteSongCallback, hideDeleteSongModalCallback }){
+        const [title, setTitle] = useState('');
+       useEffect(()=>{
         if(song && song.title)
         {
-            title = song.title;
+            setTitle(song.title)
         }
+       },[song])
+
         return (
             <div className="modal" id="remove-song-modal" data-animation="slideInOutLeft">
             <div className="modal-root" id='verify-remove-song-root'>
@@ -30,4 +30,4 @@ export default class DeleteSongModal extends Component {
         </div>
         );
     }
-}
+export default DeleteSongModal;

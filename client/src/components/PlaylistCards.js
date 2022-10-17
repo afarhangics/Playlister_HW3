@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import SongCard from './SongCard.js'
 import { GlobalStoreContext } from '../store'
 import EditSongModal from './EditSongModal'
+import DeleteSongModal from './DeleteSongModal.js'
 /*
     This React component lets us edit a loaded list, which only
     happens when we are on the proper route.
@@ -25,6 +26,30 @@ function PlaylistCards() {
             store.loadCurrentSong(index);
         }
         showEditSongModal();
+    }
+
+    function removeCurrentSong(index){
+        if(store){
+            store.loadCurrentSong(index);
+        }
+        showDeleteSongModal();
+    }
+
+    function addRemoveSong(){
+        if(store){
+            store.removeSong();
+        }
+        hideDeleteSongModal();
+    }
+
+    function showDeleteSongModal() {
+        let modal = document.getElementById("remove-song-modal");
+        modal.classList.add("is-visible");
+    }
+   
+    function hideDeleteSongModal() {
+        let modal = document.getElementById("remove-song-modal");
+        modal.classList.remove("is-visible");
     }
 
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
@@ -50,6 +75,7 @@ function PlaylistCards() {
                     song={song}
                     moveCallback={moveSong}
                     editCurrentSongCallback={editCurrentSong}
+                    removeCurrentSongCallback={removeCurrentSong}
                 />
             ))
         }
@@ -57,6 +83,11 @@ function PlaylistCards() {
             hideEditSongModalCallback={hideEditSongModal}
             song={store.currentSong}
             updateSongCallback={(sondData) => store.editSong(sondData)}
+        />
+        <DeleteSongModal
+            song={store.currentSong}
+            deleteSongCallback={addRemoveSong}
+            hideDeleteSongModalCallback={hideDeleteSongModal}
         />
         </div>
     )

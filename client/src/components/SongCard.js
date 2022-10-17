@@ -1,12 +1,16 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { GlobalStoreContext } from '../store'
+import React, { useState, useEffect } from 'react'
 
-function SongCard(props) {
+function SongCard({
+    id,
+    index,
+    song,
+    moveCallback,
+    editCurrentSongCallback,
+    removeCurrentSongCallback,
+}) {
     const [ isDragging, setIsDragging ] = useState(false);
     const [ draggedTo, setDraggedTo ] = useState(false);
     const [ cardClass, setCardClass ] = useState("list-card unselected-list-card playlister-song");
-
-    const { store } = useContext(GlobalStoreContext);
 
     const handleDragStart = (event) => {
         event.dataTransfer.setData("song", event.target.id);
@@ -31,27 +35,24 @@ function SongCard(props) {
         targetId = targetId.substring(target.id.indexOf("-") + 1);
         let sourceId = event.dataTransfer.getData("song");
         sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
-        console.log({targetId, sourceId })
         if(sourceId.length === "" || targetId === ""){
             alert("please drag the whole song card");
             return;
         }
         setIsDragging(false);
         setDraggedTo(false);
-        props.moveCallback(parseInt(sourceId), parseInt(targetId));
+        moveCallback(parseInt(sourceId), parseInt(targetId));
     }
 
     const handleDoubleClick = (event) => {
         if (event.detail === 2) {
-            props.editCurrentSongCallback(props.index);
+            editCurrentSongCallback(index);
         }
     }
 
     const getItemNum = () => {
-        return props.id.substring("playlist-song-".length);
+        return id.substring("playlist-song-".length);
     }
-
-    const { song, index } = props;
    
     useEffect(()=>{
         if(draggedTo){
@@ -85,6 +86,7 @@ function SongCard(props) {
                 id={"remove-song-" + index}
                 className="list-card-button"
                 value={"\u2715"}
+                onClick={()=>removeCurrentSongCallback(index)}
             />
         </div>
     );
