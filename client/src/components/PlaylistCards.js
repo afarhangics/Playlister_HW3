@@ -17,7 +17,7 @@ function PlaylistCards() {
     function moveSong(sourceId, targetId){
         if(store)
         {
-            store.moveSong(sourceId, targetId);
+            store.addMoveSongTransaction(sourceId, targetId);
         }
     }
 
@@ -37,7 +37,7 @@ function PlaylistCards() {
 
     function addRemoveSong(){
         if(store){
-            store.removeSong();
+            store.addRemoveSongTransaction();
         }
         hideDeleteSongModal();
     }
@@ -82,7 +82,7 @@ function PlaylistCards() {
         <EditSongModal
             hideEditSongModalCallback={hideEditSongModal}
             song={store.currentSong}
-            updateSongCallback={(sondData) => store.editSong(sondData)}
+            updateSongCallback={(sondData) => store.addEditSongTransaction(sondData)}
         />
         <DeleteSongModal
             song={store.currentSong}

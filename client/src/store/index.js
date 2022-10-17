@@ -1,6 +1,12 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+import MoveSong_Transaction from '../transactions/MoveSong_Transaction.js';
+import CreateSong_Transaction from '../transactions/CreateSong_Transaction.js';
+import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction.js';
+import UpdateSong_Transaction from '../transactions/UpdateSong_Transaction.js';
+
+
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -253,16 +259,17 @@ export const useGlobalStore = () => {
             payload: {}
         });
     }
-    store.addSong = async function () {
+    store.addAddSongTransaction = function(){
         let song = {
-            "title": "Untitled",
-            "artist": "Unknown",
-            "youTubeId": "dQw4w9WgXcQ"
+            title: "Untitled",
+            artist: "Unknown",
+            youTubeId: "dQw4w9WgXcQ"
         };
         const index = store.currentList.songs.length;
-        store.createSong(index, song);
+        let transaction = new CreateSong_Transaction(store, index, song);
+        tps.addTransaction(transaction);
     }
-    store.createSong = async function(index, song){
+    store.createSong = function(index, song){
         const { currentList } = store;
         let songs = currentList.songs;
         songs.splice(index, 0, song);
@@ -270,13 +277,19 @@ export const useGlobalStore = () => {
         content.songs = songs;
         store.updatedListContent(content);
     }
-    store.removeSong = async function(){
-        const { currentList, currentSongIndex } = store;
+    store.removeSong = function(index){
+        const { currentList } = store;
         let songs = currentList.songs;
-        songs.splice(currentSongIndex, 1);
+        songs.splice(index, 1);
         let content = currentList;
         content.songs = songs;
         store.updatedListContent(content);
+    }
+    store.addRemoveSongTransaction = () => {
+        const { currentList, currentSongIndex } = store;
+        let song = currentList.songs[currentSongIndex];
+        let transaction = new RemoveSong_Transaction(store, currentSongIndex, song);
+        tps.addTransaction(transaction);
     }
     store.updatedListContent = function(content){
         async function doUpdate(content){
@@ -290,14 +303,30 @@ export const useGlobalStore = () => {
         }
         doUpdate(content);
     }
-    store.editSong = function(songData){
-        const { currentList, currentSongIndex } = store;
+    store.updateSong = function(index, songData){
+        const { currentList } = store;
         let songs = currentList.songs;
-        songs[currentSongIndex] = songData;
+        songs[index] = songData;
 
         let updatedList = currentList;
         updatedList.songs = songs;
         store.updatedListContent(updatedList);
+    }
+    store.addEditSongTransaction = function(songData){
+        const { currentList, currentSongIndex } = store;
+        let song = currentList.songs[currentSongIndex];
+        let oldData = {
+            title: song.title,
+            artist: song.artist,
+            youTubeId: song.youTubeId
+        };
+        let newData = {
+            title: songData.title,
+            artist: songData.artist,
+            youTubeId: songData.youTubeId
+        };
+        let transaction = new UpdateSong_Transaction(store, currentSongIndex, oldData, newData);
+        tps.addTransaction(transaction);
     }
     store.moveSong = function(start, end){
         let list = store.currentList;
@@ -316,6 +345,11 @@ export const useGlobalStore = () => {
             list.songs[end] = temp;
         }
         store.updatedListContent(list);
+    }
+    // THIS FUNCTION ADDS A MoveSong_Transaction TO THE TRANSACTION STACK
+    store.addMoveSongTransaction = function (start, end){
+        let transaction = new MoveSong_Transaction(store, start, end);
+        tps.addTransaction(transaction);
     }
     //MARK LIST FOR DELETION
     store.markListForDeletion = function (list) {
