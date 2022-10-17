@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { GlobalStoreContext } from '../store'
 /*
@@ -9,18 +9,23 @@ import { GlobalStoreContext } from '../store'
     @author McKilla Gorilla
 */
 function ListCard(props) {
+    console.log(props.selected)
     const { store } = useContext(GlobalStoreContext);
-    const [ editActive, setEditActive ] = useState(false);
+    const [ editActive, setEditActive ] = useState(props.selected);
     const [ text, setText ] = useState("");
     store.history = useHistory();
-    const { idNamePair, selected } = props;
+    const { idNamePair, selected, edittingListId } = props;
+
+    useEffect(()=>{
+        setEditActive(edittingListId === idNamePair._id);
+        console.log(edittingListId);
+    }, [edittingListId])
 
     function handleLoadList(event) {
         if (!event.target.disabled) {
             let _id = event.target.id;
             if (_id.indexOf('list-card-text-') >= 0)
                 _id = ("" + _id).substring("list-card-text-".length);
-
             // CHANGE THE CURRENT LIST
             store.setCurrentList(_id);
         }
@@ -28,13 +33,15 @@ function ListCard(props) {
 
     function handleToggleEdit(event) {
         event.stopPropagation();
+        console.log("handleToggleEdit");
         toggleEdit();
     }
 
     function toggleEdit() {
+        console.log({editActive})
         let newActive = !editActive;
         if (newActive) {
-            store.setIsListNameEditActive();
+            store.setIsListNameEditActive(props.idNamePair);
         }
         setEditActive(newActive);
     }

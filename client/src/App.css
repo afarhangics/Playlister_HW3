@@ -48,11 +48,30 @@ body {
   background-image: linear-gradient(to bottom,         
   #b8b808, #636723);
   color: white;
-  font-size: 48pt;
+  font-size: 30pt;
   border-color: black;
   border-width: 2px;
   border-style: solid;
   border-radius: 10px;
+}
+#playlist-selector-heading{
+  position: fixed;
+  text-align:center;
+  font-size: 18pt;
+  font-weight: bold;
+  display:flex;
+  flex-direction: row;
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  padding-right: 68%;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--swatch-primary);
+}
+
+#list-selector-list{
+  margin-top: 50px;
 }
 
 #edit-toolbar {

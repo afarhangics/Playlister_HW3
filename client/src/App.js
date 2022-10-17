@@ -9,14 +9,16 @@ import { Banner, ListSelector, PlaylistCards, Statusbar } from './components'
 */
 const App = () => {
     return (
-        <Router>
-            <Banner />
-            <Switch>
-                <Route path="/" exact component={ListSelector} />
-                <Route path="/playlist/:id" exact component={PlaylistCards} />
-            </Switch>
-            <Statusbar />
-        </Router>
+        <div id="app-root">
+            <Router>
+                <Banner />
+                <Switch>
+                    <Route path="/" exact component={ListSelector} />
+                    <Route path="/playlist/:id" exact component={PlaylistCards} />
+                </Switch>
+                <Statusbar />
+            </Router>
+        </div>
     )
 }
 

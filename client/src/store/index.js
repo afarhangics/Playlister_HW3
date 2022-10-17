@@ -30,6 +30,7 @@ export const useGlobalStore = () => {
     const [store, setStore] = useState({
         idNamePairs: [],
         currentList: null,
+        edittingListId: "_id",
         newListCounter: 0,
         listNameActive: false
     });
@@ -44,6 +45,7 @@ export const useGlobalStore = () => {
                 return setStore({
                     idNamePairs: payload.idNamePairs,
                     currentList: payload.playlist,
+                    edittingListId: "_id",
                     newListCounter: store.newListCounter,
                     listNameActive: false
                 });
@@ -53,24 +55,29 @@ export const useGlobalStore = () => {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: null,
+                    edittingListId: "_id",
                     newListCounter: store.newListCounter,
                     listNameActive: false
                 })
             }
             // CREATE A NEW LIST
             case GlobalStoreActionType.CREATE_NEW_LIST: {
+                console.log("CREATE_NEW_LIST", payload._id)
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
+                    edittingListId: payload._id,
                     newListCounter: store.newListCounter + 1,
-                    listNameActive: false
-                })
+                    listNameActive: true
+                });
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
+                console.log("loadingpairs", store.edittingListId);
                 return setStore({
-                    idNamePairs: payload,
+                    idNamePairs: payload.idNamePairs,
                     currentList: null,
+                    edittingListId: payload.edittingListId,
                     newListCounter: store.newListCounter,
                     listNameActive: false
                 });
@@ -80,6 +87,7 @@ export const useGlobalStore = () => {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: null,
+                    edittingListId: "_id",
                     newListCounter: store.newListCounter,
                     listNameActive: false
                 });
@@ -89,6 +97,7 @@ export const useGlobalStore = () => {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
+                    edittingListId: store.edittingListId,
                     newListCounter: store.newListCounter,
                     listNameActive: false
                 });
@@ -98,6 +107,7 @@ export const useGlobalStore = () => {
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
+                    edittingListId: payload._id,
                     newListCounter: store.newListCounter,
                     listNameActive: true
                 });
@@ -116,7 +126,7 @@ export const useGlobalStore = () => {
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
-                let playlist = response.data.playist;
+                let playlist = response.data.playlist;
                 playlist.name = newName;
                 async function updateList(playlist) {
                     response = await api.updatePlaylistById(playlist._id, playlist);
@@ -152,14 +162,14 @@ export const useGlobalStore = () => {
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
-    store.loadIdNamePairs = function () {
+    store.loadIdNamePairs = function (prevId="_id") {
         async function asyncLoadIdNamePairs() {
             const response = await api.getPlaylistPairs();
             if (response.data.success) {
                 let pairsArray = response.data.idNamePairs;
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-                    payload: pairsArray
+                    payload: {idNamePairs: pairsArray, edittingListId: prevId}
                 });
             }
             else {
@@ -186,6 +196,28 @@ export const useGlobalStore = () => {
         }
         asyncSetCurrentList(id);
     }
+    store.createNewList = function() {
+        let newList = {
+            name: "Untitled",
+            songs: []
+        };
+
+        async function asyncCreateNewList() {
+            const response = await api.createPlaylist(newList);
+            if (response.data.success) {
+                let data = response.data.playlist;
+                storeReducer({
+                    type: GlobalStoreActionType.CREATE_NEW_LIST,
+                    payload: data
+                });
+               store.loadIdNamePairs(data._id);
+            }
+            else {
+                console.log("API FAILED TO CREATE NEW LIST");
+            }
+        }
+        asyncCreateNewList();
+    }
     store.getPlaylistSize = function() {
         return store.currentList.songs.length;
     }
@@ -197,13 +229,12 @@ export const useGlobalStore = () => {
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
-    store.setlistNameActive = function () {
+    store.setIsListNameEditActive = function (playist) {
         storeReducer({
             type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
-            payload: null
+            payload: playist
         });
     }
-
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
 }

@@ -24,24 +24,24 @@ const ListSelector = () => {
             <ListCard
                 key={pair._id}
                 idNamePair={pair}
-                selected={false}
+                selected={store.edittingListId === pair._id}
+                edittingListId={store.edittingListId}
             />
         ))
     }
     return (
-        <div id="playlist-selector">
-            <div id="list-selector-list">
+        <div className="root" id="playlist-selector">
             <div id="playlist-selector-heading">
-                <input
-                    type="button"
-                    id="add-list-button"
-                    onClick={handleCreateNewList}
-                    className="playlister-button"
-                    value="+" />
-                Your Lists
-            </div>                {
-                    listCard
-                }
+                    <input
+                        type="button"
+                        id="add-list-button"
+                        onClick={handleCreateNewList}
+                        className="playlister-button"
+                        value="+" />
+                    Your Lists
+            </div>
+            <div id="list-selector-list">
+                {listCard}
             </div>
         </div>)
 }
