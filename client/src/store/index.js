@@ -15,9 +15,12 @@ export const GlobalStoreActionType = {
     CHANGE_LIST_NAME: "CHANGE_LIST_NAME",
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
+    MARK_LIST_DELETE: "MARK_LIST_DELETE",
+    DONE_LIST_DELETE: "DONE_LIST_DELETE",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    ADD_SONG: "ADD_SONG"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -31,6 +34,7 @@ export const useGlobalStore = () => {
         idNamePairs: [],
         currentList: null,
         edittingListId: "_id",
+        markDeleteList:null,
         newListCounter: 0,
         listNameActive: false
     });
@@ -47,6 +51,7 @@ export const useGlobalStore = () => {
                     currentList: payload.playlist,
                     edittingListId: "_id",
                     newListCounter: store.newListCounter,
+                    markDeleteList:null,
                     listNameActive: false
                 });
             }
@@ -57,6 +62,7 @@ export const useGlobalStore = () => {
                     currentList: null,
                     edittingListId: "_id",
                     newListCounter: store.newListCounter,
+                    markDeleteList:null,
                     listNameActive: false
                 })
             }
@@ -68,6 +74,7 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     edittingListId: payload._id,
                     newListCounter: store.newListCounter + 1,
+                    markDeleteList:null,
                     listNameActive: true
                 });
             }
@@ -79,6 +86,7 @@ export const useGlobalStore = () => {
                     currentList: null,
                     edittingListId: payload.edittingListId,
                     newListCounter: store.newListCounter,
+                    markDeleteList:null,
                     listNameActive: false
                 });
             }
@@ -89,6 +97,7 @@ export const useGlobalStore = () => {
                     currentList: null,
                     edittingListId: "_id",
                     newListCounter: store.newListCounter,
+                    markDeleteList:null,
                     listNameActive: false
                 });
             }
@@ -99,6 +108,7 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     edittingListId: store.edittingListId,
                     newListCounter: store.newListCounter,
+                    markDeleteList:null,
                     listNameActive: false
                 });
             }
@@ -109,7 +119,44 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     edittingListId: payload._id,
                     newListCounter: store.newListCounter,
+                    markDeleteList:null,
                     listNameActive: true
+                });
+            }
+            //MARK FOR DELETION
+            case GlobalStoreActionType.MARK_LIST_DELETE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    edittingListId: store.edittingListId,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    markDeleteList:payload
+
+                });
+            }
+            //DONE LIST DELETE
+            case GlobalStoreActionType.DONE_LIST_DELETE: {
+                const filteredList = store.idNamePairs.filter(pair => pair._id !== payload);
+                return setStore({
+                    idNamePairs: filteredList,
+                    currentList: store.currentList,
+                    edittingListId: "_id",
+                    newListCounter: store.newListCounter - 1,
+                    listNameActive: false,
+                    markDeleteList:null,
+
+                });
+            }
+            case GlobalStoreActionType.ADD_SONG: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    edittingListId: "_id",
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    markDeleteList:null,
+
                 });
             }
             default:
@@ -159,6 +206,54 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+    }
+    store.addSong = async function () {
+        let song = {
+            "title": "Untitled",
+            "artist": "Unknown",
+            "youTubeId": "dQw4w9WgXcQ"
+        };
+        const index = store.currentList.songs.length;
+        store.createSong(index, song);
+    }
+    store.createSong = async function(index, song){
+        const { currentList } = store;
+        let songs = currentList.songs;
+        songs.splice(index, 0, song);
+        let updatedList = currentList;
+        updatedList.songs = songs;
+        const response = await api.updatePlaylistById(updatedList._id, updatedList);
+        if (response.data.success) {
+            storeReducer({
+                type: GlobalStoreActionType.ADD_SONG,
+                payload: updatedList
+            });
+        }
+    }
+    //MARK LIST FOR DELETION
+    store.markListForDeletion = function (list) {
+        storeReducer({
+            type: GlobalStoreActionType.MARK_LIST_DELETE,
+            payload: list
+        });
+    }
+
+    //DELETE LIST
+    store.deleteList = function (id) {
+        async function asyncDeleteList(id) {
+            const response = await api.deletePlaylistById(id);
+            if (response.data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.DONE_LIST_DELETE,
+                    payload: id
+                });
+            }
+            else {
+                console.log("API FAILED TO DELTE LIST WITH ID");
+            }
+        }
+        asyncDeleteList(id);
+        
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS

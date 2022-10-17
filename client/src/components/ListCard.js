@@ -9,7 +9,6 @@ import { GlobalStoreContext } from '../store'
     @author McKilla Gorilla
 */
 function ListCard(props) {
-    console.log(props.selected)
     const { store } = useContext(GlobalStoreContext);
     const [ editActive, setEditActive ] = useState(props.selected);
     const [ text, setText ] = useState("");
@@ -18,7 +17,6 @@ function ListCard(props) {
 
     useEffect(()=>{
         setEditActive(edittingListId === idNamePair._id);
-        console.log(edittingListId);
     }, [edittingListId])
 
     function handleLoadList(event) {
@@ -33,12 +31,10 @@ function ListCard(props) {
 
     function handleToggleEdit(event) {
         event.stopPropagation();
-        console.log("handleToggleEdit");
         toggleEdit();
     }
 
     function toggleEdit() {
-        console.log({editActive})
         let newActive = !editActive;
         if (newActive) {
             store.setIsListNameEditActive(props.idNamePair);
@@ -82,6 +78,11 @@ function ListCard(props) {
                 type="button"
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
+                onClick={
+                    () => {
+                    props.showDeleteListModal();
+                    props.markListForDeletion(idNamePair);                
+                }}
                 value={"\u2715"}
             />
             <input
