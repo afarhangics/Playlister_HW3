@@ -12,15 +12,23 @@ function PlaylistCards() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
+    function moveSong(sourceId, targetId){
+        if(store)
+        {
+            store.moveSong(sourceId, targetId);
+        }
+    }
+
     return (
         <div id="playlist-cards">
         {
             store.currentList.songs.map((song, index) => (
                 <SongCard
-                    id={'playlist-song-' + (index)}
-                    key={'playlist-song-' + (index)}
+                    id={'playlist-song-' + index}
+                    key={'playlist-song-' + index}
                     index={index}
                     song={song}
+                    moveCallback={moveSong}
                 />
             ))
         }
