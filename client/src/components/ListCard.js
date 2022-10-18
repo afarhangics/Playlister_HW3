@@ -15,9 +15,9 @@ function ListCard(props) {
     const [ text, setText ] = useState(idNamePair.name);
     store.history = useHistory();
 
-    useEffect(()=>{
+    useEffect(() => {
         setEditActive(edittingListId === idNamePair._id);
-    }, [edittingListId])
+    }, [edittingListId]);
 
     function handleLoadList(event) {
         if (!event.target.disabled) {
@@ -34,20 +34,27 @@ function ListCard(props) {
         toggleEdit();
     }
 
-    function toggleEdit() {
+    function handleDelete(event){
+        event.stopPropagation();
+        props.showDeleteListModal();
+        props.markListForDeletion(idNamePair);
+    };
+
+    function toggleEdit(){
         let newActive = !editActive;
         if (newActive) {
             store.setIsListNameEditActive(props.idNamePair);
         }
         setEditActive(newActive);
-    }
+    };
 
     function handleKeyPress(event) {
         if (event.code === "Enter") {
             store.changeListName(idNamePair._id, text);
             toggleEdit();
         }
-    }
+    };
+
     function handleUpdateText(event) {
         setText(event.target.value );
     }
@@ -64,24 +71,22 @@ function ListCard(props) {
         <div
             id={idNamePair._id}
             key={idNamePair._id}
+            onClick={handleLoadList}
             className={'list-card ' + selectClass}>
             <span
-                onClick={handleLoadList}
                 id={"list-card-text-" + idNamePair._id}
                 key={"span-" + idNamePair._id}
-                className="list-card-text">
+                className="list-card-text"
+                >
                 {idNamePair.name}
             </span>
             <input
                 disabled={cardStatus}
                 type="button"
                 id={"delete-list-" + idNamePair._id}
+                style={{cursor: 'pointer'}}
                 className="list-card-button"
-                onClick={
-                    () => {
-                    props.showDeleteListModal();
-                    props.markListForDeletion(idNamePair);                
-                }}
+                onClick={handleDelete}
                 value={"\u2715"}
             />
             <input

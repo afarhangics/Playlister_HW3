@@ -75,12 +75,12 @@ export const useGlobalStore = () => {
                     idNamePairs: store.idNamePairs,
                     currentList: null,
                     edittingListId: "_id",
-                    newListCounter: store.newListCounter,
+                    newListCounter: null,
                     markDeleteList:null,
                     listNameActive: false,
                     currentListIsSet: false,
-                    currentSong: store.currentSong,
-                    currentSongIndex: store.currentSongIndex,
+                    currentSong: null,
+                    currentSongIndex: null,
                 })
             }
             // CREATE A NEW LIST
@@ -275,6 +275,7 @@ export const useGlobalStore = () => {
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
+        tps.clearAllTransactions();
         storeReducer({
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}

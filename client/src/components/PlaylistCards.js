@@ -66,29 +66,29 @@ function PlaylistCards() {
 
     return (
         <div className="root" id="playlist-cards">
-        {
-            store.currentList.songs.map((song, index) => (
-                <SongCard
-                    id={'playlist-song-' + index}
-                    key={'playlist-song-' + index}
-                    index={index}
-                    song={song}
-                    moveCallback={moveSong}
-                    editCurrentSongCallback={editCurrentSong}
-                    removeCurrentSongCallback={removeCurrentSong}
-                />
-            ))
-        }
-        <EditSongModal
-            hideEditSongModalCallback={hideEditSongModal}
-            song={store.currentSong}
-            updateSongCallback={(sondData) => store.addEditSongTransaction(sondData)}
-        />
-        <DeleteSongModal
-            song={store.currentSong}
-            deleteSongCallback={addRemoveSong}
-            hideDeleteSongModalCallback={hideDeleteSongModal}
-        />
+            {
+                store.currentList && store.currentList.songs.map((song, index) => (
+                    <SongCard
+                        id={'playlist-song-' + index}
+                        key={'playlist-song-' + index}
+                        index={index}
+                        song={song}
+                        moveCallback={moveSong}
+                        editCurrentSongCallback={editCurrentSong}
+                        removeCurrentSongCallback={removeCurrentSong}
+                    />
+                ))
+            }
+            <EditSongModal
+                hideEditSongModalCallback={hideEditSongModal}
+                song={store.currentSong}
+                updateSongCallback={(sondData) => store.addEditSongTransaction(sondData)}
+            />
+            <DeleteSongModal
+                song={store.currentSong}
+                deleteSongCallback={addRemoveSong}
+                hideDeleteSongModalCallback={hideDeleteSongModal}
+            />
         </div>
     )
 }
